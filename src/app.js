@@ -2,6 +2,7 @@
 	var stuffArr = [], 
 		stuffLen = 1, 
 		myCar, 
+		mapLayer, 
 		dataWatch = true, 
 		manifest, 
 		preload, 
@@ -92,14 +93,14 @@
 		var button = new createjs.Shape();
 		button.graphics.beginFill('yellow').arc(100, 100, 20, 0, Math.PI*2);
 
-		stage.addChild(background);
-		stage.addChild(button);
+		stage.addChildAt(button, 0);
+		stage.addChildAt(background, 0);
 		stage.update();
 
 		button.addEventListener('click', function() {
+
 			background.graphics.clear();
-			Container(Map());
-			// pageStart();
+			pageStart();
 
 		});
 
@@ -131,20 +132,29 @@
 		adjustViewport(btnShape, btn_width, btn_height, 50, 50);
 		// btnShape.x = (CANVAS_WIDTH - 50) / 2;
 		// btnShape.y = CANVAS_HEIGHT - 50;
-		// btn.addEventListener('click', function() {
 
-		// 	Container(Map());
-		// 	console.log(123);
-		// });
+		// stage.addChild(bgShape);
+		mapLayer = new Map();
+		myCar = new CreateCar(false);
+		stuffArr[0] = new CreateStuff(true);
+		// stage.addChild(btnShape);
+		stage.addChildAt(btnShape, 1);
 
-		stage.addChild(bgShape);
-		stage.addChild(btnShape);
 		stage.update();
+		btnShape.addEventListener('click', function() {
 
+			myCar.update();
+			stuffArr[0].update(event);
+			createjs.Ticker.addEventListener('tick', function(event) {
+				mapLayer.update(event);
+				stage.update();
+			});
+			
+		});
 	}
 
 	// 地图
-	function Map() {
+	/*function Map() {
 
 		var casDoubleH = CANVAS_HEIGHT * 2;
 		var roadBg = preload.getResult('bg');
@@ -173,19 +183,89 @@
 
 		return [mapOne, mapTwo, mapThree];
 
+	}*/
+	function Map() {
+
+		this.casDoubleH = CANVAS_HEIGHT * 2;
+		this.road = preload.getResult('bg');
+		this.width = this.road.width;
+		this.height = this.road.height;
+		this.map = new Array(3);
+		this.container = new createjs.Container();
+
+		stage.clear();
+		// 设置三张地图轮换
+		var self = this;
+		self.init();
+
 	}
+	Map.prototype = {
+
+		constructor: Map, 
+
+		init: function() {
+
+			var self = this;
+			self.draw();
+		}, 
+
+		draw: function() {
+
+			var self = this;
+			var len = self.map.length;
+			var road = self.road;
+			var width = self.width, height = self.height;
+
+			for(var i = 0;i < len;i ++) {
+				self.map[i] = new createjs.Shape();
+				self.map[i].graphics.beginBitmapFill(road).drawRect(0, 0, self.width, self.height);
+				self.map[i].y = - CANVAS_HEIGHT * i;
+				adjustViewport(self.map[i], width, height, CANVAS_WIDTH, CANVAS_HEIGHT);
+				self.container.addChild(self.map[i]);
+			}
+
+			// stage.addChild(self.container);
+			stage.addChildAt(self.container, 0);
+		}, 
+
+		update: function(event) {
+
+			var self = this;
+			var len = self.map.length;
+
+			if(!event.paused) {
+
+				var s = (a * Math.pow(t, 2)) / 2 * 5;
+
+				for(var i = 0;i < len;i ++){
+					if(self.map[i].y > CANVAS_HEIGHT) {
+
+						self.map[i].y = i === 0 ? self.map[len - 1].y - CANVAS_HEIGHT : self.map[i - 1].y - CANVAS_HEIGHT;
+					}
+				}
+
+				for(i = 0;i < len;i ++) {
+					self.map[i].y += s;
+				}
+			}
+
+		}
+	};
+
 
 	// 汽车
-	function CreateCar() {
+	function CreateCar(auto) {
 
 		this.speed = 10;
 		this.car = new createjs.Shape();
 		this.carId = preload.getResult('car');
 		this.coordinateY = 0;
 		this.height = this.carId.height;
+		this.auto = auto;
 
 		var self = this;
 		self.init();
+		self.auto && self.update();
 	}
 	CreateCar.prototype = {
 
@@ -195,7 +275,7 @@
 
 			var self = this;
 			self.draw();
-			self.update();
+			// self.update();
 		}, 
 
 		draw: function() {
@@ -213,7 +293,8 @@
 			car.x = x0;
 			car.y = y0;
 
-			stage.addChild(car);
+			// stage.addChild(car);
+			stage.addChildAt(car, 0);
 			stage.update();
 		}, 
 		center: function() {
@@ -250,7 +331,7 @@
 	};
 
 	// 奖品
-	function CreateStuff() {
+	function CreateStuff(auto) {
 
 		this.width = 100;
 		this.height = 100;
@@ -267,7 +348,7 @@
 		this.init();
 
 		var self = this;
-		createjs.Ticker.addEventListener('tick', self.update.bind(self));
+		auto && createjs.Ticker.addEventListener('tick', self.update.bind(self));
 	}
 	CreateStuff.prototype = {
 
@@ -299,7 +380,8 @@
 
 			self.container.addChild(self.stuffL);
 			self.container.addChild(self.stuffR);
-			stage.addChild(self.container);
+			// stage.addChild(self.container);
+			stage.addChildAt(self.container, 0);
 			stage.update();
 		}, 
 		isPrize: function(prize, disX, pos) {
@@ -367,12 +449,11 @@
 
 			if(stuff.y > self._updateDis && self.status && stuffArr.length < last) {
 
-				stuffArr[stuffArr.length] = new CreateStuff();
+				stuffArr[stuffArr.length] = new CreateStuff(true);
 				self.status = false;
 			} 
 
 			var s = (a * Math.pow(t, 2)) / 2 * 5;
-			
 			// 下落速度随车速变化而变化（同步）
 			self._speed = parseInt(s);
 			if(!event.paused){
@@ -383,7 +464,7 @@
 		}
 	};
 
-	function Container(mapArr) {
+	/*function DrawGame(mapArr) {
 
 		var bgContainer = new createjs.Container();
 		bgContainer.addChild(mapArr[0], mapArr[1], mapArr[2]);
@@ -421,11 +502,13 @@
 
 		}
 
-		stuffArr[0] = new CreateStuff();
-		myCar = new CreateCar();
+		stuffArr[0] = new CreateStuff(true);
+		myCar = new CreateCar(false);
 		createjs.Ticker.addEventListener('tick', Move);
 		createjs.Ticker.addEventListener('tick', dataCompare);
-	}
+	}*/
+
+
 
 	function dataCompare(event, callBack) {
 

@@ -11,4 +11,17 @@ var stage = new createjs.Stage(canvas);
 var circle = new createjs.Shape();
 circle.graphics.beginFill('red').drawRect(0, 0, 100, 100);
 stage.addChild(character);
+
+var layer1 = new createjs.Shape();
+var layer2 = new createjs.Shape();
+var layer3 = new createjs.Shape();
+
+layer1.graphics.beginFill('red').drawRect(0, 0, 100, 100);
+layer2.graphics.beginFill('blue').drawRect(30, 30, 100, 100);
+layer3.graphics.beginFill('green').drawRect(60, 60, 100, 100);
+
+stage.addChildAt(layer1, 1);
+stage.addChildAt(layer2, 1);
+stage.addChildAt(layer3, 3);
+
 stage.update();
