@@ -3,12 +3,21 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="full-screen" content="yes"/>
     <meta name="screen-orientation" content="portrait"/>
     <meta name="x5-fullscreen" content="true"/>
     <meta name="360-fullscreen" content="true"/>
 	<title>Document</title>
+	<script>
+	window.onerror = function() {
+
+		for(var i = 0;i < arguments.length;i ++) {
+
+			alert(arguments[i]);
+		}
+	};
+	</script>
 	<script src="lib/easeljs-0.8.1.min.js"></script>
 	<script src="lib/preloadjs-0.6.1.min.js"></script>
 	<style>
@@ -31,7 +40,8 @@
 	</style>
 </head>
 <body>
-	<canvas id="cas">您的浏览器版本过低，请升级</canvas>
+	<canvas id="cas" width=320 height=480>您的浏览器版本过低，请升级</canvas>
+	<!-- <script src="src/demo.js"></script> -->
 	<script src="src/app.js"></script>
 </body>
 </html>

@@ -21,7 +21,8 @@
 
 	function init() {
 
-		// createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		// createjs.Ticker.setFPS(60);
 		loadStatics();
 		// createjs.Ticker.addEventListener('tick', addImg);
 		// var image = new createjs.Bitmap('res/images/bg.png');
@@ -71,7 +72,7 @@
 
 	function loading() {
 
-		console.log(`${preload.progress * 100 | 0}%`);
+		console.log((preload.progress * 100 | 0) + '%');
 		stage.update();
 	}
 
@@ -97,8 +98,8 @@
 
 		button.addEventListener('click', function() {
 			background.graphics.clear();
-			// Container(Map());
-			pageStart();
+			Container(Map());
+			// pageStart();
 
 		});
 
@@ -228,7 +229,7 @@
 		update: function() {
 
 			var self = this;
-			var car = self.car
+			var car = self.car;
 			var s = (a * Math.pow(t, 2)) / 2;
 
 			car.y -= s;
@@ -258,6 +259,10 @@
 		this.startY = -120;
 		this.coordinateY = 0;
 		this.index = stuffArr.length;
+		this.status = true;
+		// this.stuffL = new createjs.Shape();
+		// this.stuffR = new createjs.Shape();
+		// this.container = new createjs.Container();
 
 		this.init();
 
@@ -275,7 +280,7 @@
 
 			this.left = Math.floor(Math.random() * 2);
 			this.right = this.left === 1 ? 0 : Math.floor(Math.random() * 2);
-			this.status = true;
+			// this.status = true;
 			this.stuffL = new createjs.Shape();
 			this.stuffR = new createjs.Shape();
 			this.container = new createjs.Container();
@@ -350,7 +355,9 @@
 			var self = this;
 			var last = parseInt(CANVAS_HEIGHT / self.height);
 			var stuff = this.container;
+
 			if(stuff.y > (CANVAS_HEIGHT + (-self.startY))) {
+
 				// self.stuffL.graphics.clear();
 				// self.stuffR.graphics.clear();
 				// self.container.removeAllChildren();
@@ -364,14 +371,14 @@
 				self.status = false;
 			} 
 
-			var s = (a * Math.pow(t, 2)) / 2 * 10;
-			// self._speed = s > 10 ? 10 : s;
+			var s = (a * Math.pow(t, 2)) / 2 * 5;
+			
 			// 下落速度随车速变化而变化（同步）
 			self._speed = parseInt(s);
 			if(!event.paused){
 				self.coordinateY = stuff.y;
 				stuff.y += self._speed;
-				stage.update();
+				// stage.update();
 			}
 		}
 	};
@@ -386,9 +393,8 @@
 
 		function Move(event) {
 
-			var s = (a * Math.pow(t, 2)) / 2 * 10;
+			var s = (a * Math.pow(t, 2)) / 2 * 5;
 			// 通过得到车位移，让地图也要经过相同位移
-			// s  = s > 10 ? 10 : s;
 
 			if(mapArr[0].y >= CANVAS_HEIGHT) {	// 当超过屏幕时重新定义到末尾图
 
