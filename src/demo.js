@@ -20,8 +20,11 @@ layer1.graphics.beginFill('red').drawRect(0, 0, 100, 100);
 layer2.graphics.beginFill('blue').drawRect(30, 30, 100, 100);
 layer3.graphics.beginFill('green').drawRect(60, 60, 100, 100);
 
+// stage.addChildAt(layer1, 1);
+// stage.addChildAt(layer2, 1);
+// stage.addChildAt(layer3, 2);
 stage.addChildAt(layer1, 1);
 stage.addChildAt(layer2, 1);
-stage.addChildAt(layer3, 3);
+stage.addChild(layer3);
 
 stage.update();

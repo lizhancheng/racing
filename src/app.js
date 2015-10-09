@@ -3,7 +3,8 @@
 		stuffLen = 1, 
 		myCar, 
 		mapLayer, 
-		dataWatch = true, 
+		dataWatch = true,
+		pause = false,  
 		manifest, 
 		preload, 
 		background, 
@@ -100,6 +101,7 @@
 		button.addEventListener('click', function() {
 
 			background.graphics.clear();
+			stage.removeAllChildren();
 			pageStart();
 
 		});
@@ -130,27 +132,46 @@
 
 		btnShape.graphics.beginBitmapFill(btn, 'no-repeat').drawRect(0, 0, btn_width, btn_height);
 		adjustViewport(btnShape, btn_width, btn_height, 50, 50);
-		// btnShape.x = (CANVAS_WIDTH - 50) / 2;
-		// btnShape.y = CANVAS_HEIGHT - 50;
+		btnShape.x = (CANVAS_WIDTH - 50) / 2;
+		btnShape.y = CANVAS_HEIGHT - 100;
 
 		// stage.addChild(bgShape);
 		mapLayer = new Map();
 		myCar = new CreateCar(false);
 		stuffArr[0] = new CreateStuff(true);
-		// stage.addChild(btnShape);
-		stage.addChildAt(btnShape, 1);
+		stage.addChild(btnShape);
+		// stage.addChildAt(btnShape, 1);
 
 		stage.update();
 		btnShape.addEventListener('click', function() {
 
-			myCar.update();
-			stuffArr[0].update(event);
-			createjs.Ticker.addEventListener('tick', function(event) {
-				mapLayer.update(event);
-				stage.update();
-			});
+			if(!pause) {
+
+				pause = true;
+				myCar.update();
+				stuffArr[0].update(event);
+				createjs.Ticker.addEventListener('tick', function(event) {
+					mapLayer.update(event);
+					dataCompare(event);
+					stage.update();
+				});
+			}else {
+
+				createjs.Ticker.paused = !createjs.Ticker.paused;
+				// decelarate();
+			}
 			
 		});
+	}
+
+	function decelarate() {
+
+		if(t === 0) {
+			return false;
+		}
+		t -= 1 / 60;
+
+		requestAnimationFrame(decelarate);
 	}
 
 	// 地图
@@ -294,7 +315,7 @@
 			car.y = y0;
 
 			// stage.addChild(car);
-			stage.addChildAt(car, 0);
+			stage.addChildAt(car, 1);
 			stage.update();
 		}, 
 		center: function() {
@@ -381,7 +402,7 @@
 			self.container.addChild(self.stuffL);
 			self.container.addChild(self.stuffR);
 			// stage.addChild(self.container);
-			stage.addChildAt(self.container, 0);
+			stage.addChildAt(self.container, 1);
 			stage.update();
 		}, 
 		isPrize: function(prize, disX, pos) {
@@ -522,11 +543,11 @@
 				stuff = stuffArr[i];
 				if(stuff.left || stuff.right) {
 
-					range[0] = stuff.coordinateY + stuff.startY;
+					range[0] = stuff.coordinateY + stuff.startY + 10;	// 貌似是因为coordinateY没有及时更新导致值偏小一点，所以要加10px
 					range[1] = range[0] + stuff.height;
 					range[2] = myCar.coordinateY;
 					range[3] = range[2] + myCar.height;
-
+					
 					if(range[0] >= range[2] && range[1] <= range[3]) {	// 匹配范围
 
 						addBeauty(range);
@@ -542,7 +563,7 @@
 		}else if(!event.paused) {
 
 			dataWatch = true;
-			console.log('watching...');
+			// console.log('watching...');
 		}
 	}
 
