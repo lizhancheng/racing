@@ -1,25 +1,23 @@
-(function () {
-	var stuffArr = [], 
-		stuffLen = 1, 
-		myCar, 
-		mapLayer, 
-		dataWatch = true,
-		pause = false,  
-		manifest, 
-		preload, 
-		background, 
-		start, 
-		CANVAS_WIDTH, 
-		CANVAS_HEIGHT, 
-		a = 0.5, 
-		t = 0;
+var execute = function () {
+	var stuffArr = [], // 人物数组
+		stuffLen = 1, // 人物列表长度
+		myCar, // 汽车对象变量
+		mapLayer, // 地图对象变量
+		dataWatch = true, // 全局监听开车和刹车变量
+		pause = false, // 全局暂停变量
+		manifest, // 图片应用缓存
+		preload, // 预加载对象
+		CANVAS_WIDTH, // canvas容器宽度
+		CANVAS_HEIGHT, // canvas容器高度
+		a = 1, // 加速度
+		t = 0; // 时间
 
 	var cas = document.getElementById('cas');
 
 	var stage = new createjs.Stage(cas);
 	// 设置canvas的高和宽
-	CANVAS_WIDTH = stage.canvas.width = window.screen.width;
-	CANVAS_HEIGHT = stage.canvas.height = window.screen.height;
+	CANVAS_WIDTH = stage.canvas.width = +document.body.clientWidth;
+	CANVAS_HEIGHT = stage.canvas.height = +document.body.clientHeight;
 
 	function init() {
 
@@ -39,6 +37,24 @@
 
 		var basePath = 'res/images/';
 		manifest = [
+
+			{
+				id: 'cover', 
+				src: 'cover.png'
+			},
+			{
+				id: 'challenge', 
+				src: 'challenge.png'
+			},
+			{
+				id: 'rule', 
+				src: 'rule.png'
+			},
+			{
+				id: 'start', 
+				src: 'start.png'
+			},
+
 			{
 				id: 'bg', 
 				src: 'road.png'
@@ -72,42 +88,6 @@
 
 	}
 
-	function loading() {
-
-		console.log((preload.progress * 100 | 0) + '%');
-		stage.update();
-	}
-
-	function handleComplete() {
-
-		var bg = preload.getResult('bg'), 
-			startBtn = preload.getResult('start_btn');
-
-		background = new createjs.Shape();
-		background.graphics.beginBitmapFill(bg).drawRect(0, 0, bg.width, bg.height);
-		// background.graphics.beginBitmapFill(startBtn, 'no-repeat').drawRect(20, 0, 231, 79);
-		// 背景全图，缩放比例
-		background.scaleX = CANVAS_WIDTH / bg.width;
-		background.scaleY = CANVAS_HEIGHT / bg.height;
-		// background.graphics.beginBitmapFill(startBtn).drawRect(0, 0, 231, 79);
-
-		var button = new createjs.Shape();
-		button.graphics.beginFill('yellow').arc(100, 100, 20, 0, Math.PI*2);
-
-		stage.addChildAt(button, 0);
-		stage.addChildAt(background, 0);
-		stage.update();
-
-		button.addEventListener('click', function() {
-
-			background.graphics.clear();
-			stage.removeAllChildren();
-			pageStart();
-
-		});
-
-	}
-
 	function adjustViewport(obj, o_width, o_height, f_width, f_height) {
 
 		// 得到长宽比例
@@ -118,31 +98,94 @@
 		obj.scaleY = scaleY;
 	}
 
-	function pageStart() {
 
-		var bg = preload.getResult('bg'), 
-			bg_width = bg.width, bg_height = bg.height,
-			btn = preload.getResult('start_btn'), 
+	function loading() {
+
+		console.log((preload.progress * 100 | 0) + '%');
+		stage.update();
+	}
+
+	function handleComplete() {
+		
+		drawCover();
+
+	}
+
+	function drawCover() {
+
+		var cover = preload.getResult('cover');
+		var cover_width = cover.width, cover_height = cover.height;
+		var challenge = preload.getResult('challenge');
+		var cha_width = challenge.width, cha_height = challenge.height;
+
+		var coverShape = new createjs.Shape();
+		coverShape.graphics.beginBitmapFill(cover, 'no-repeat').drawRect(0, 0, cover_width, cover_height);
+
+		var chaShape = new createjs.Shape();
+		chaShape.graphics.beginBitmapFill(challenge, 'no-repeat').drawRect(0, 0, cha_width, cha_height);
+		chaShape.x = CANVAS_WIDTH / 4;
+		chaShape.y = CANVAS_HEIGHT - 98;
+		chaShape.addEventListener('click', drawRule, false);
+
+		adjustViewport(coverShape, cover_width, cover_height, CANVAS_WIDTH, CANVAS_HEIGHT);
+		adjustViewport(chaShape, cha_width, cha_height, (CANVAS_WIDTH * 0.5), 50);
+
+		stage.removeAllChildren();
+		stage.addChild(coverShape);
+		stage.addChild(chaShape);
+		stage.update();
+	}
+
+	function drawRule() {
+
+		var rule = preload.getResult('rule');
+		var rule_width = rule.width, rule_height = rule.height;
+		var start = preload.getResult('start');
+		var start_width = start.width, start_height = start.height;
+
+		var ruleShape = new createjs.Shape();
+		ruleShape.graphics.beginBitmapFill(rule, 'no-repeat').drawRect(0, 0, rule_width, rule_height);
+
+		var startShape = new createjs.Shape();
+		startShape.graphics.beginBitmapFill(start, 'no-repeat').drawRect(0, 0, start_width, start_height);
+		startShape.x = CANVAS_WIDTH / 4;
+		startShape.y = CANVAS_HEIGHT - 135;
+		startShape.addEventListener('click', function() {
+
+			stage.removeAllChildren();
+			drawStart();
+		}, false);
+
+		adjustViewport(ruleShape, rule_width, rule_height, CANVAS_WIDTH, CANVAS_HEIGHT);
+		adjustViewport(startShape, start_width, start_height, (CANVAS_WIDTH * 0.55), 70);
+
+		stage.removeAllChildren();
+		stage.addChild(ruleShape);
+		stage.addChild(startShape);
+		stage.update();
+	}
+
+	function drawStart() {
+
+		var	btn = preload.getResult('start_btn'), 
 			btn_width = btn.width, btn_height = btn.height,
-			bgShape = new createjs.Shape(), 
-			btnShape = new createjs.Shape();
-
-		bgShape.graphics.beginBitmapFill(bg, 'no-repeat').drawRect(0, 0, bg_width, bg_height);
-		adjustViewport(bgShape, bg_width, bg_height, CANVAS_WIDTH, CANVAS_HEIGHT);
+			btnShape = new createjs.Shape(), 
+			maskShape = new createjs.Shape();
 
 		btnShape.graphics.beginBitmapFill(btn, 'no-repeat').drawRect(0, 0, btn_width, btn_height);
+		maskShape.graphics.beginFill('rgba(255, 255, 255, 0.8)').drawRect(0, CANVAS_HEIGHT - 90, CANVAS_WIDTH, 90);
 		adjustViewport(btnShape, btn_width, btn_height, 50, 50);
 		btnShape.x = (CANVAS_WIDTH - 50) / 2;
-		btnShape.y = CANVAS_HEIGHT - 100;
+		btnShape.y = CANVAS_HEIGHT - 70;
 
-		// stage.addChild(bgShape);
 		mapLayer = new Map();
 		myCar = new CreateCar(false);
 		stuffArr[0] = new CreateStuff(true);
-		stage.addChild(btnShape);
-		// stage.addChildAt(btnShape, 1);
 
+		stage.addChild(maskShape);
+		stage.addChild(btnShape);
 		stage.update();
+		
 		btnShape.addEventListener('click', function() {
 
 			if(!pause) {
@@ -175,36 +218,6 @@
 	}
 
 	// 地图
-	/*function Map() {
-
-		var casDoubleH = CANVAS_HEIGHT * 2;
-		var roadBg = preload.getResult('bg');
-		var bg_width = roadBg.width, bg_height = roadBg.height;
-
-		stage.clear();
-		// 设置三张地图轮换
-		var mapOne = new createjs.Shape();
-
-		var mapTwo = new createjs.Shape();
-		mapTwo.y = - CANVAS_HEIGHT;
-
-		var mapThree = mapTwo.clone();
-		mapThree.y = - CANVAS_HEIGHT * 2;
-
-		setMap([mapOne, mapTwo, mapThree]);
-
-		function setMap(objArr) {
-
-			for(var i = 0;i < objArr.length;i ++){
-				objArr[i].graphics.beginBitmapFill(roadBg).drawRect(0, 0, bg_width, bg_height);
-				// 背景适应屏幕大小
-				adjustViewport(objArr[i], bg_width, bg_height, CANVAS_WIDTH, CANVAS_HEIGHT);
-			}
-		}
-
-		return [mapOne, mapTwo, mapThree];
-
-	}*/
 	function Map() {
 
 		this.casDoubleH = CANVAS_HEIGHT * 2;
@@ -324,7 +337,7 @@
 			var carId = self.carId;
 			var width = carId.width, height = carId.height;
 			var centerX = (+CANVAS_WIDTH - +width) / 2;
-			var bottomY = +CANVAS_HEIGHT - +height;
+			var bottomY = +CANVAS_HEIGHT - +height - 120;
 
 			return [centerX, bottomY, width, height];
 		}, 
@@ -485,52 +498,6 @@
 		}
 	};
 
-	/*function DrawGame(mapArr) {
-
-		var bgContainer = new createjs.Container();
-		bgContainer.addChild(mapArr[0], mapArr[1], mapArr[2]);
-
-		stage.addChild(bgContainer);
-		stage.update();
-
-		function Move(event) {
-
-			var s = (a * Math.pow(t, 2)) / 2 * 5;
-			// 通过得到车位移，让地图也要经过相同位移
-
-			if(mapArr[0].y >= CANVAS_HEIGHT) {	// 当超过屏幕时重新定义到末尾图
-
-				mapArr[0].y = mapArr[2].y - CANVAS_HEIGHT;
-			}
-
-			if(mapArr[1].y >= CANVAS_HEIGHT) {
-				
-				mapArr[1].y = mapArr[0].y - CANVAS_HEIGHT;
-			}
-
-			if(mapArr[2].y >= CANVAS_HEIGHT) {
-
-				mapArr[2].y = mapArr[1].y - CANVAS_HEIGHT;
-			}
-
-			if(!event.paused) {
-				mapArr[0].y += s;
-				mapArr[1].y += s;
-				mapArr[2].y += s;
-
-				stage.update();
-			}
-
-		}
-
-		stuffArr[0] = new CreateStuff(true);
-		myCar = new CreateCar(false);
-		createjs.Ticker.addEventListener('tick', Move);
-		createjs.Ticker.addEventListener('tick', dataCompare);
-	}*/
-
-
-
 	function dataCompare(event, callBack) {
 
 		if(event.paused && dataWatch) {
@@ -575,4 +542,9 @@
 
 	init();
 
-})();
+};
+
+window.addEventListener('load', function() {
+
+	execute();
+}, false);
