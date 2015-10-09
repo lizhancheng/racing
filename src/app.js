@@ -15,7 +15,7 @@ var execute = function () {
 	var cas = document.getElementById('cas');
 
 	var stage = new createjs.Stage(cas);
-	// 设置canvas的高和宽
+	// 设置canvas的高、宽与屏幕的高、宽一样
 	CANVAS_WIDTH = stage.canvas.width = +document.body.clientWidth;
 	CANVAS_HEIGHT = stage.canvas.height = +document.body.clientHeight;
 
@@ -54,7 +54,6 @@ var execute = function () {
 				id: 'start', 
 				src: 'start.png'
 			},
-
 			{
 				id: 'bg', 
 				src: 'road.png'
@@ -101,7 +100,19 @@ var execute = function () {
 
 	function loading() {
 
-		console.log((preload.progress * 100 | 0) + '%');
+		var mask = new createjs.Shape();
+		mask.graphics.beginFill('rgba(0, 0, 0, 0.7)').drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+		var loading = (preload.progress * 100 | 0) + '%';
+		var text = new createjs.Text(loading, '20px Arial', 'white');
+		text.x = CANVAS_WIDTH / 2 - 15;
+		text.y = CANVAS_HEIGHT / 2;
+		text.textBaseline = "alphabetic";
+
+		stage.removeAllChildren();
+		stage.addChild(mask);
+		stage.addChild(text);
+		
 		stage.update();
 	}
 
@@ -165,7 +176,37 @@ var execute = function () {
 		stage.update();
 	}
 
-	function drawStart() {
+	// 倒计时函数
+	function countDown(num) {
+
+		var number = new createjs.Text(num, '42px Arial', 'yellow');
+		number.x = CANVAS_WIDTH / 2 - 21;
+		number.y = CANVAS_HEIGHT / 2;
+
+		stage.addChild(number);
+		stage.update();
+		stage.removeChild(number);
+
+		if(+number.text === 1) {
+			console.log('start');
+			return false;
+		}
+
+		setTimeout(function() {
+
+			countDown(+number.text - 1);
+		}, 1000);		
+	}
+
+	function drawTop() {
+
+		var mask = new createjs.Shape();
+		mask.graphics.beginFill('rgba(255, 255, 255, 0.8)').drawRect(0, 0, CANVAS_WIDTH, 70);
+
+		stage.addChild(mask);
+	}
+
+	function drawBottom() {
 
 		var	btn = preload.getResult('start_btn'), 
 			btn_width = btn.width, btn_height = btn.height,
@@ -178,33 +219,41 @@ var execute = function () {
 		btnShape.x = (CANVAS_WIDTH - 50) / 2;
 		btnShape.y = CANVAS_HEIGHT - 70;
 
+		stage.addChild(maskShape);
+		stage.addChild(btnShape);
+
+		btnShape.addEventListener('click', function() {
+
+			createjs.Ticker.paused = !createjs.Ticker.paused;
+				// decelarate();
+		});
+
+	}
+
+	function drawStart() {
+
+		drawTop();
+		drawBottom();
+		countDown(4);
+
 		mapLayer = new Map();
 		myCar = new CreateCar(false);
 		stuffArr[0] = new CreateStuff(true);
+		setTimeout(function() {
 
-		stage.addChild(maskShape);
-		stage.addChild(btnShape);
+			myCar.update();
+			// 物品处理还需优化
+			stuffArr[0].update(createjs.Ticker);
+			createjs.Ticker.addEventListener('tick', function(event) {
+
+				mapLayer.update(event);
+				dataCompare(event);
+				stage.update();
+			});
+		}, 4000);
+
 		stage.update();
 		
-		btnShape.addEventListener('click', function() {
-
-			if(!pause) {
-
-				pause = true;
-				myCar.update();
-				stuffArr[0].update(event);
-				createjs.Ticker.addEventListener('tick', function(event) {
-					mapLayer.update(event);
-					dataCompare(event);
-					stage.update();
-				});
-			}else {
-
-				createjs.Ticker.paused = !createjs.Ticker.paused;
-				// decelarate();
-			}
-			
-		});
 	}
 
 	function decelarate() {

@@ -35,6 +35,7 @@ circle.graphics.beginFill('rgba(200, 0, 0, 0.5)').arc(0, 0, 30, 0, Math.PI * 2);
 circle.x = circle.y = 100;
 var text = new createjs.Text('开始', '18px Arial', 'black');
 text.x = 82.5, text.y = 90;
+console.log(text);
 
 stage.addChild(circle);
 stage.addChild(text);
