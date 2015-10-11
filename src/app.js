@@ -187,14 +187,19 @@ var execute = function () {
 		stage.update();
 		stage.removeChild(number);
 
-		if(+number.text === 1) {
-			console.log('start');
+		if(num === 'GO') {
 			return false;
+		}
+
+		var nextNumber = +num - 1;
+
+		if(nextNumber === 0) {
+			nextNumber = 'GO';
 		}
 
 		setTimeout(function() {
 
-			countDown(+number.text - 1);
+			countDown(nextNumber);
 		}, 1000);		
 	}
 
@@ -250,7 +255,7 @@ var execute = function () {
 				dataCompare(event);
 				stage.update();
 			});
-		}, 4000);
+		}, 5000);
 
 		stage.update();
 		
@@ -594,6 +599,5 @@ var execute = function () {
 };
 
 window.addEventListener('load', function() {
-
 	execute();
 }, false);
