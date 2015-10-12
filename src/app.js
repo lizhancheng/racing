@@ -122,6 +122,7 @@ var execute = function () {
 
 	}
 
+	// 封面
 	function drawCover() {
 
 		var cover = preload.getResult('cover');
@@ -147,6 +148,7 @@ var execute = function () {
 		stage.update();
 	}
 
+	// 规则
 	function drawRule() {
 
 		var rule = preload.getResult('rule');
@@ -203,6 +205,7 @@ var execute = function () {
 		}, 1000);		
 	}
 
+	// 顶部
 	function drawTop() {
 
 		var mask = new createjs.Shape();
@@ -211,6 +214,7 @@ var execute = function () {
 		stage.addChild(mask);
 	}
 
+	// 底部
 	function drawBottom() {
 
 		var	btn = preload.getResult('start_btn'), 
@@ -227,14 +231,18 @@ var execute = function () {
 		stage.addChild(maskShape);
 		stage.addChild(btnShape);
 
-		btnShape.addEventListener('click', function() {
+		setTimeout(function() {
 
-			createjs.Ticker.paused = !createjs.Ticker.paused;
-				// decelarate();
-		});
+			btnShape.addEventListener('click', function() {
+
+				createjs.Ticker.paused = !createjs.Ticker.paused;
+					// decelarate();
+			});
+		}, 5000);
 
 	}
 
+	// 开始画面
 	function drawStart() {
 
 		drawTop();

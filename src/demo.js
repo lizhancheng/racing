@@ -1,16 +1,28 @@
 var canvas = document.getElementById("cas");
 var stage = new createjs.Stage(canvas);
-// var data = new createjs.SpriteSheet({
-//   "images": ["res/images/car.png"],
-//   "frames": {"regX": 0, "height": 96, "count": 10, "regY": 0, "width": 75},
-//   "animations": {"walk": [0, 9]}
-// });
-// character = new createjs.Sprite(data, "walk");
-// character.play();
+// stage.canvas.height = "600";
+// stage.canvas.width = "1000";
 
-// var circle = new createjs.Shape();
-// circle.graphics.beginFill('red').drawRect(0, 0, 100, 100);
-// stage.addChild(character);
+// function init() {
+	var spriteSheet = new createjs.SpriteSheet({
+				framerate: 5,
+				"images": ["res/images/bird.jpg"],
+				"frames": {"regX": 20, "height": 85, "count": 8, "regY": 0, "width": 141},
+				// define two animations, run (loops, 1.5x speed) and jump (returns to run):
+				"animations": {
+					"run": [0, 7, "run", 1],
+					"jump": [26, 63, "run"]
+				}
+			});
+		var grant = new createjs.Sprite(spriteSheet, "run");
+		grant.x = 50;
+		// grant.y = 22;
+		// Add Grant to the stage, and add it as a listener to Ticker to get updates each frame.
+		stage.addChild(grant);
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		createjs.Ticker.addEventListener("tick", stage);
+// }
+// init();
 
 // var layer1 = new createjs.Shape();
 // var layer2 = new createjs.Shape();
@@ -30,13 +42,12 @@ var stage = new createjs.Stage(canvas);
 // stage.update();
 // 
 
-var circle = new createjs.Shape();
-circle.graphics.beginFill('rgba(200, 0, 0, 0.5)').arc(0, 0, 30, 0, Math.PI * 2);
-circle.x = circle.y = 100;
-var text = new createjs.Text('开始', '18px Arial', 'black');
-text.x = 82.5, text.y = 90;
-console.log(text);
+// var circle = new createjs.Shape();
+// circle.graphics.beginFill('rgba(200, 0, 0, 0.5)').arc(0, 0, 30, 0, Math.PI * 2);
+// circle.x = circle.y = 100;
+// var text = new createjs.Text('开始', '18px Arial', 'black');
+// text.x = 82.5, text.y = 90;
 
-stage.addChild(circle);
-stage.addChild(text);
-stage.update();
+// stage.addChild(circle);
+// stage.addChild(text);
+// stage.update();
