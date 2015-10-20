@@ -9,7 +9,7 @@ var execute = function () {
 		preload, // 预加载对象
 		CANVAS_WIDTH, // canvas容器宽度
 		CANVAS_HEIGHT, // canvas容器高度
-		a = 1, // 加速度
+		a = 5, // 加速度
 		t = 0; // 时间
 
 	var cas = document.getElementById('cas');
@@ -78,6 +78,10 @@ var execute = function () {
 				id: 'null', 
 				src: 'null.png'
 			},
+			{
+				id: 'heart', 
+				src: 'heart.png'
+			}
 		];
 
 		preload = new createjs.LoadQueue(true, basePath);
@@ -571,7 +575,7 @@ var execute = function () {
 
 				stuff = stuffArr[i];
 				if(stuff.left || stuff.right) {
-
+					// range[0]、range[1]是stuff.container的垂直距离范围，range[2]、range[3]是车的垂直距离范围
 					range[0] = stuff.coordinateY + stuff.startY + 10;	// 貌似是因为coordinateY没有及时更新导致值偏小一点，所以要加10px
 					range[1] = range[0] + stuff.height;
 					range[2] = myCar.coordinateY;
@@ -580,6 +584,7 @@ var execute = function () {
 					if(range[0] >= range[2] && range[1] <= range[3]) {	// 匹配范围
 
 						addBeauty(range);
+						// drawEffect(stuff);
 						dataWatch = false;
 						break;
 					}else {
@@ -602,10 +607,25 @@ var execute = function () {
 		console.log('success');
 	}
 
+	function drawEffect(stuff) {
+
+		var disX = stuff.left ? stuff.stuffL.x : stuff.stuffR.x;
+		var container = stuff.container;
+		var heart = preload.getResult('heart');
+		var width = heart.width, height = heart.height;
+		var mtx = new createjs.Matrix2D();
+		mtx.append(1, 0, 0, 1, disX-50, -60);
+		console.log(disX);
+
+		var heartShape = new createjs.Shape();
+		heartShape.graphics.beginBitmapFill(heart, 'no-repeat').drawRect(0, 0, width, height);
+
+		container.addChild(heartShape);
+		stage.update();
+	}
+
 	init();
 
 };
 
-window.addEventListener('load', function() {
-	execute();
-}, false);
+window.addEventListener('load', execute, false);

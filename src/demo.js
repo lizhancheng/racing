@@ -3,26 +3,23 @@ var stage = new createjs.Stage(canvas);
 // stage.canvas.height = "600";
 // stage.canvas.width = "1000";
 
-// function init() {
-	var spriteSheet = new createjs.SpriteSheet({
-				framerate: 5,
-				"images": ["res/images/bird.jpg"],
-				"frames": {"regX": 20, "height": 85, "count": 8, "regY": 0, "width": 141},
-				// define two animations, run (loops, 1.5x speed) and jump (returns to run):
-				"animations": {
-					"run": [0, 7, "run", 1],
-					"jump": [26, 63, "run"]
-				}
-			});
-		var grant = new createjs.Sprite(spriteSheet, "run");
-		grant.x = 50;
-		// grant.y = 22;
-		// Add Grant to the stage, and add it as a listener to Ticker to get updates each frame.
-		stage.addChild(grant);
-		createjs.Ticker.timingMode = createjs.Ticker.RAF;
-		createjs.Ticker.addEventListener("tick", stage);
-// }
-// init();
+var spriteSheet = new createjs.SpriteSheet({
+			framerate: 5,
+			"images": ["res/images/bird.jpg"],
+			"frames": {"regX": 20, "height": 85, "count": 8, "regY": 0, "width": 141},
+			// define two animations, run (loops, 1.5x speed) and jump (returns to run):
+			"animations": {
+				"run": [0, 7, "run", 1],
+				"jump": [26, 63, "run"]
+			}
+		});
+	var grant = new createjs.Sprite(spriteSheet, "run");
+	grant.x = 50;
+	// grant.y = 22;
+	// Add Grant to the stage, and add it as a listener to Ticker to get updates each frame.
+	// stage.addChild(grant);
+	createjs.Ticker.timingMode = createjs.Ticker.RAF;
+	createjs.Ticker.addEventListener("tick", stage);
 
 // var layer1 = new createjs.Shape();
 // var layer2 = new createjs.Shape();
